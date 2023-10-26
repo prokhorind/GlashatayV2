@@ -2,10 +2,8 @@ package services
 
 import (
 	"database/sql"
-	"errors"
 	Usdomain "github.com/prokhorind/glashatayBotV2/internal/core/domain"
 	"github.com/prokhorind/glashatayBotV2/internal/core/ports"
-	"github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
@@ -28,25 +26,31 @@ func (s gameService) Register(user Usdomain.User, chat Usdomain.Chat, year int) 
 	s.gameRepository.CreateNewGame(user, chat, year)
 }
 
-func (s gameService) RunGame(chat Usdomain.Chat) (*Usdomain.User, *Usdomain.Phrase, error) {
-
+func (s gameService) HasJobAlreadyRun(chat Usdomain.Chat) (bool, *Usdomain.Chat, error) {
 	resp, err := s.gameRepository.SelectChatById(chat.ID)
 	if err != nil {
-		return nil, nil, err
+		return true, nil, err
 	}
 
 	loc, _ := time.LoadLocation(os.Getenv("TZ"))
 	now := time.Now().In(loc)
 	lt := resp.LastTimeTriggered
 	yr, mth, day := now.Date()
-	if lt.Valid {
-		tyr, tmth, tday := lt.Time.In(loc).Date()
 
-		if tyr == yr && tmth == mth && tday == day {
-			logrus.Info("job is already triggered")
-			return nil, nil, errors.New("job is already triggered")
-		}
+	if !lt.Valid {
+		return false, resp, nil
 	}
+	tyr, tmth, tday := lt.Time.In(loc).Date()
+
+	res := tyr == yr && tmth == mth && tday == day
+
+	return res, resp, nil
+}
+
+func (s gameService) RunGame(chat Usdomain.Chat) (*Usdomain.User, *Usdomain.Phrase, error) {
+	loc, _ := time.LoadLocation(os.Getenv("TZ"))
+	now := time.Now().In(loc)
+	yr := now.Year()
 
 	user, err := s.gameRepository.SelectWinnerByChat(chat)
 	if err != nil {

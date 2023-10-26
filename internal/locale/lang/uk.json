@@ -4,5 +4,6 @@
   "wrongStatWithYearRequest" : "Приклад: /stat 2023 || /stat ALL",
   "allStatHeader" : "Загальні результати:",
   "yearStatHeader" : "Результати за %d рік:",
-  "noStatsMsg" : "Результати для цього чату відсутні"
+  "noStatsMsg" : "Результати для цього чату відсутні",
+  "gayAlreadyChosen" : "Підора дня вже обрано: %s"
 }

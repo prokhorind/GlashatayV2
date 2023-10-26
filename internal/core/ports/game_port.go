@@ -24,4 +24,5 @@ type GameService interface {
 	RunGame(chat Usdomain.Chat) (*Usdomain.User, *Usdomain.Phrase, error)
 	GetStatByYear(chat Usdomain.Chat, year int) ([]Usdomain.GameStat, error)
 	GetStat(chat Usdomain.Chat) ([]Usdomain.GameStat, error)
+	HasJobAlreadyRun(chat Usdomain.Chat) (bool, *Usdomain.Chat, error)
 }

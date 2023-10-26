@@ -25,7 +25,8 @@ func main() {
 		panic("can't create bot")
 	}
 	tgBot.Handle(tb.OnText, func(m *tb.Message) {
-		hn := handler.GetHandler(strings.Split(m.Text, " ")[0])
+		key := strings.Split(strings.Split(m.Text, " ")[0], "@")[0]
+		hn := handler.GetHandler(key)
 		hn(api, m)
 	})
 

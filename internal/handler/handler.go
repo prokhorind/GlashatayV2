@@ -28,6 +28,24 @@ func init() {
 	handlers = map[string]func(bot *tgbotapi.BotAPI, update *tb.Message){
 		"/gaytoday": func(bot *tgbotapi.BotAPI, update *tb.Message) {
 			chat := chatConverter{}.convert(update.Chat)
+
+			hasRun, chatRes, err := gameService.HasJobAlreadyRun(chat)
+			if err != nil {
+				logrus.Errorf("can't get chat info: %d %s", chat.ID, err.Error())
+				return
+			}
+
+			if hasRun {
+				message := tgbotapi.MessageConfig{}
+				message.ChatID = update.Chat.ID
+				viewUserName := view.GetUserName(bot, update, chatRes.SelectedUserId.Int64)
+
+				text, _ := translator.Get("gayAlreadyChosen", language.Ukrainian)
+				message.Text = fmt.Sprintf(text, viewUserName)
+				bot.Send(message)
+				return
+			}
+
 			user, phrase, error := gameService.RunGame(chat)
 			if error != nil {
 				logrus.Errorf("can't run game for chat %s with error: %s", chat.ID, error.Error())
