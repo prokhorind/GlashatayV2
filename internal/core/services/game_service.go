@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	Usdomain "github.com/prokhorind/glashatayBotV2/internal/core/domain"
 	"github.com/prokhorind/glashatayBotV2/internal/core/ports"
+	"github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
@@ -37,6 +38,7 @@ func (s gameService) HasJobAlreadyRun(chat Usdomain.Chat) (bool, *Usdomain.Chat,
 	lt := resp.LastTimeTriggered
 	yr, mth, day := now.Date()
 
+	logrus.Infof("IS DATE VALID %v  %v", lt.Valid, lt.Time)
 	if !lt.Valid {
 		return false, resp, nil
 	}
@@ -58,7 +60,6 @@ func (s gameService) RunGame(chat Usdomain.Chat) (*Usdomain.User, *Usdomain.Phra
 	}
 
 	stat, err := s.gameRepository.SelectUserStatByYear(*user, chat, yr)
-	s.gameRepository.SelectUserStatByYear(*user, chat, yr)
 
 	if err != nil && err != sql.ErrNoRows {
 		return nil, nil, err
@@ -73,7 +74,7 @@ func (s gameService) RunGame(chat Usdomain.Chat) (*Usdomain.User, *Usdomain.Phra
 	if err != nil {
 		return nil, nil, err
 	}
-	chat.LastTimeTriggered = sql.NullTime{Time: now.UTC()}
+	chat.LastTimeTriggered = sql.NullTime{Time: now}
 	s.gameRepository.UpdateChatTriggeredTime(chat, user.ID)
 
 	phrase, err := s.phraseRepository.SelectRandomPhrase(chat)
