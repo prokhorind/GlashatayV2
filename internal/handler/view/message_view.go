@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func GetUserName(bot *tgbotapi.BotAPI, update *tb.Message, userId int64) string {
+func GetUserName(bot *tgbotapi.BotAPI, update *tb.Message, userId int64, withTag bool) string {
 	member := tgbotapi.GetChatMemberConfig{}
 	member.ChatID = update.Chat.ID
 	member.UserID = userId
@@ -18,7 +18,11 @@ func GetUserName(bot *tgbotapi.BotAPI, update *tb.Message, userId int64) string 
 	}
 
 	if len(strings.TrimSpace(mm.User.UserName)) != 0 {
-		return "@" + mm.User.UserName
+		if withTag {
+			return "@" + mm.User.UserName
+		} else {
+			return mm.User.UserName
+		}
 	}
 
 	return mm.User.FirstName + " " + mm.User.LastName

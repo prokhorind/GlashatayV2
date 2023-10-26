@@ -38,7 +38,7 @@ func init() {
 			if hasRun {
 				message := tgbotapi.MessageConfig{}
 				message.ChatID = update.Chat.ID
-				viewUserName := view.GetUserName(bot, update, chatRes.SelectedUserId.Int64)
+				viewUserName := view.GetUserName(bot, update, chatRes.SelectedUserId.Int64, true)
 
 				text, _ := translator.Get("gayAlreadyChosen", language.Ukrainian)
 				message.Text = fmt.Sprintf(text, viewUserName)
@@ -51,7 +51,7 @@ func init() {
 				logrus.Errorf("can't run game for chat %s with error: %s", chat.ID, error.Error())
 				return
 			}
-			viewUserName := view.GetUserName(bot, update, user.ID)
+			viewUserName := view.GetUserName(bot, update, user.ID, true)
 			var text string
 			if phrase.Type == "DYNAMIC" {
 				text = strings.ReplaceAll(phrase.Phrase, "%gayname%", viewUserName)
@@ -136,7 +136,7 @@ func init() {
 
 			for id, stat := range stats {
 				stat := stat
-				viewUserName := view.GetUserName(bot, update, stat.UserID)
+				viewUserName := view.GetUserName(bot, update, stat.UserID, false)
 				sb.WriteString(fmt.Sprintf("\n <strong>%d.</strong> %s: %d", id+1, viewUserName, stat.Num))
 			}
 
